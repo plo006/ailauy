@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatbot UI</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background: #f0f0f0; }
+    h1 { text-align: center; }
+    #chat-box { background: #fff; padding: 15px; border-radius: 10px; min-height: 200px; margin-bottom: 10px; }
+    .user { color: blue; margin-top: 10px; }
+    .bot { color: green; }
+    input, button { padding: 10px; font-size: 16px; }
+    #message { width: 70%; }
+  </style>
+</head>
+<body>
+  <h1>🤖 Chatbot</h1>
+  <div id="chat-box"></div>
+  <input type="text" id="message" placeholder="Type your message here..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message');
+    const apiURL = 'https://a94002cb-e53f-4f96-924b-babcaeb8875b-00-2ze4kwhi9lasx.pike.replit.dev/';
+
+    function addMessage(sender, text) {
+      const msg = document.createElement('div');
+      msg.className = sender;
+      msg.textContent = `${sender === 'user' ? 'You' : 'Bot'}: ${text}`;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const userText = messageInput.value.trim();
+      if (!userText) return;
+      addMessage('user', userText);
+      messageInput.value = '';
+
+      try {
+        const res = await fetch(apiURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userText })
+        });
+        const data = await res.json();
+        addMessage('bot', data.response || 'No response received.');
+      } catch (err) {
+        addMessage('bot', '⚠️ Error contacting chatbot.');
+      }
+    }
+  </script>
+</body>
+</html>
